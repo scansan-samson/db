@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4431c8ab-6a07-41f7-a722-a0230c7e0034" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Execute.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Fields.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Insert.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Insert_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/New.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Query.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/QueryStruct.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Record.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Update.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Update_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/db.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
