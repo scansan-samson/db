@@ -1,4 +1,4 @@
-package mysql
+package STmySQL
 
 import (
     "errors"
@@ -8,12 +8,14 @@ import (
     "time"
 )
 
-func (db *Database) Insert(dbStructure any) (string, error) {
+func (db *Database) Update(dbStructure any) (string, error) {
     
     t := reflect.TypeOf(dbStructure)
-    InsertTable := ""
-    endsql := ""
+    UpdateTable := ""
     buildsql := ""
+    UpdateColumn := ""
+    UpdateValue := ""
+    
     for i := 0; i < t.NumField(); i++ {
         field := t.Field(i)
         tag := field.Tag.Get("db")
@@ -29,33 +31,33 @@ func (db *Database) Insert(dbStructure any) (string, error) {
             
             if dbStructureMap["primarykey"] == "yes" {
                 // l.INFO("Primary Key Found: %s", dbStructureMap["table"])
-                InsertTable = dbStructureMap["table"]
+                UpdateTable = dbStructureMap["table"]
+                UpdateColumn = dbStructureMap["column"]
+                UpdateValue = fmt.Sprintf("%v", value)
             }
             
             if dbStructureMap["omit"] != "yes" && dbStructureMap["primarykey"] != "yes" {
-                buildsql = buildsql + dbStructureMap["column"] + ","
+                buildsql = buildsql + dbStructureMap["column"] + "="
                 
                 switch field.Type.Name() {
                 case "int", "int32", "int64":
-                    endsql = endsql + fmt.Sprintf("%v", value) + ","
+                    buildsql = buildsql + fmt.Sprintf("%v", value) + ","
                 case "string":
-                    endsql = endsql + hexRepresentation(value.(string)) + ","
+                    buildsql = buildsql + hexRepresentation(value.(string)) + ","
                 case "float64":
-                    endsql = endsql + fmt.Sprintf("%v", value) + ","
+                    buildsql = buildsql + fmt.Sprintf("%v", value) + ","
                 case "Time":
-                    endsql = endsql + fmt.Sprintf("'%s'", value.(time.Time).Format("2006-01-02 15:04:05")) + ","
+                    buildsql = buildsql + fmt.Sprintf("'%s'", value.(time.Time).Format("2006-01-02 15:04:05")) + ","
                 default:
                     db.Logger.With("type", field.Type.Name()).With("value", value).Error("type error")
-                    endsql = endsql + "'" + value.(string) + "',"
+                    buildsql = buildsql + "'" + value.(string) + "',"
                 }
             }
         }
     }
     // Get Rid of Trailling Comma
     buildsql = strings.TrimSuffix(buildsql, ",")
-    endsql = strings.TrimSuffix(endsql, ",")
-    
-    SQL := "INSERT INTO " + InsertTable + "(" + buildsql + ") VALUES (" + endsql + ");"
+    SQL := "UPDATE " + UpdateTable + " SET " + buildsql + " WHERE " + UpdateColumn + "=" + UpdateValue + ";"
     
     return SQL, nil
 }

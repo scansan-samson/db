@@ -1,4 +1,4 @@
-package mysql
+package STmySQL
 
 import (
     "fmt"
@@ -51,8 +51,6 @@ func hexRepresentation(in string) string {
     return "X'" + fmt.Sprintf("%x", in) + "'"
     // return "'" + in + "'"
 }
-
-// OpenDatabaseConnection Open a connection to the database
 
 // getStructDetails Get the details of a struct
 func getStructDetails[T any](dbFieldName string) (string, any) {

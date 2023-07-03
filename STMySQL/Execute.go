@@ -1,4 +1,4 @@
-package mysql
+package STmySQL
 
 func (db *Database) Execute(sql string, parameters ...any) (int64, int64, error) {
     

@@ -1,4 +1,4 @@
-package mysql
+package STmySQL
 
 import (
     "testing"
@@ -21,7 +21,9 @@ func TestUpdate(t *testing.T) {
         Status:  1,
     }
     
-    sql, err := db.Update(p)
+    New("", nil)
+    
+    sql, err := DB.Update(p)
     if err != nil {
         t.Error(err)
     }

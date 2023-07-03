@@ -1,4 +1,4 @@
-package mysql
+package STmySQL
 
 func (db *Database) Query(sql string, parameters ...any) ([]Record, error) {
     
