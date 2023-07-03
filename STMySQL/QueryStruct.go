@@ -51,7 +51,7 @@ func QueryStruct[T any](sql string, parameters ...any) ([]T, error) {
                 // l.INFO("Setting Blob field: %s to %v", structFieldName, v.Value)
             
             default:
-                l.Error("Database column '%s' (index %d) was not found Type:'%T' Struct Field:'%s' StructValue:'%s'", k, i, structFieldType, structFieldName, structFieldType)
+                l.With("col", k).With("index", i).With("structFieldName", structFieldName).With("structFieldType", structFieldType).Error("Database column was not found")
             }
         }
         
