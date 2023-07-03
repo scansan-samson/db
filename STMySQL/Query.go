@@ -2,13 +2,6 @@ package STmySQL
 
 func (db *Database) Query(sql string, parameters ...any) ([]Record, error) {
     
-    // Possibly a bad idea.
-    // t := time.Now()
-    // defer func() {
-    //	d := time.Since(t)
-    //	metrics.SQLTimings.With(prometheus.Labels{"sql": sql, "site": config.GetEnvString("THEME", "")}).Set(float64(d.Milliseconds()))
-    // }()
-    
     allRecords := make([]Record, 0)
     
     DatabaseConnection, err := getConnection()

@@ -6,6 +6,8 @@ import (
     l "golang.org/x/exp/slog"
 )
 
+// You can't do Method Generic types in Go, so we have to use a function.
+
 func QueryStruct[T any](sql string, parameters ...any) ([]T, error) {
     
     // First of all, get all the database records, ising the old Record/Field method.
@@ -57,6 +59,8 @@ func QueryStruct[T any](sql string, parameters ...any) ([]T, error) {
     }
     return results, nil
 }
+
+// You can't do Method Generic types in Go, so we have to use a function.
 
 func QuerySingleStruct[T any](sql string, parameters ...any) (T, error) {
     

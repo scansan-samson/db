@@ -8,7 +8,7 @@ import (
 
 type Record map[string]Field
 
-func RecordUpdate(RecordToUpdate Record, UpdateTable string, UpdateColumn string, UpdateColumnValue string) (int64, error) {
+func (db *Database) RecordUpdate(RecordToUpdate Record, UpdateTable string, UpdateColumn string, UpdateColumnValue string) (int64, error) {
     
     // Build an SQL Statement Based on the Record.
     buildsql := "UPDATE " + UpdateTable + " SET "
@@ -41,7 +41,7 @@ func RecordUpdate(RecordToUpdate Record, UpdateTable string, UpdateColumn string
     return RowsAffected, nil
 }
 
-func RecordInsert(RecordToInsert Record, InsertTable string) (int64, error) {
+func (db *Database) RecordInsert(RecordToInsert Record, InsertTable string) (int64, error) {
     
     // Build an SQL Statement Based on the Record.
     buildsql := "INSERT INTO " + InsertTable + "("
