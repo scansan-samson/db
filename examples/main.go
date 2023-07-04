@@ -7,7 +7,7 @@ import (
     
     "golang.org/x/exp/slog"
     
-    STmySQL "github.com/SpaceTent/db/STMySQL"
+    MySQL "github.com/SpaceTent/db/mysql"
 )
 
 type UpdatePerson struct {
@@ -24,7 +24,7 @@ func main() {
     textHandler := slog.NewTextHandler(os.Stdout, nil)
     l := slog.New(textHandler)
     
-    STmySQL.New(DSN, l)
+    MySQL.New(DSN, l)
     
     p := UpdatePerson{
         Id:      12,
@@ -33,7 +33,7 @@ func main() {
         Status:  1,
     }
     
-    sql, err := STmySQL.DB.Update(p)
+    sql, err := MySQL.DB.Update(p)
     if err != nil {
         l.Error(err.Error())
     }
