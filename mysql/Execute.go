@@ -1,4 +1,4 @@
-package STmySQL
+package mysql
 
 func (db *Database) Execute(sql string, parameters ...any) (int64, int64, error) {
     
@@ -15,7 +15,9 @@ func (db *Database) Execute(sql string, parameters ...any) (int64, int64, error)
     LastInsertedID, _ := Result.LastInsertId()
     RowsAffected, _ := Result.RowsAffected()
     
-    db.Logger.With("lastid", LastInsertedID).With("rows effected", RowsAffected).Info(sql)
+    if db.ShowSQL {
+        db.Logger.With("lastid", LastInsertedID).With("rows effected", RowsAffected).Info(sql)
+    }
     
     return LastInsertedID, RowsAffected, nil
 }

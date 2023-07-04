@@ -1,4 +1,4 @@
-package STmySQL
+package mysql
 
 import (
     "database/sql"
@@ -13,6 +13,7 @@ type Database struct {
     dbConnection               *sql.DB
     DSN                        string
     Logger                     *slog.Logger
+    ShowSQL                    bool
     Timed                      bool
     Lock                       sync.Mutex
     connected                  bool
@@ -29,6 +30,7 @@ func New(newDSN string, L *slog.Logger) {
         connected: false,
         DSN:       newDSN,
         Logger:    L,
+        ShowSQL:   false,
     }
 }
 

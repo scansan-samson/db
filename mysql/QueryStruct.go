@@ -1,4 +1,4 @@
-package STmySQL
+package mysql
 
 import (
     "reflect"
