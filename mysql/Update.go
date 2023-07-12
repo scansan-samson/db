@@ -25,8 +25,9 @@ func (db *Database) Update(dbStructure any) (string, error) {
             value := reflect.ValueOf(dbStructure).Field(i).Interface()
             // l.INFO("%d. Value='%v'  %v (%v), tag: '%v'\n", i+1, value, field.Name, field.Type.Name(), tag)
             
+            // TODO: Need to look at way for this to happen and not though an error
             if dbStructureMap["column"] == "" {
-                return "", errors.New("no column name specified for field" + field.Type.Name())
+                return "", errors.New("no column name specified for field '" + field.Type.Name() + "'")
             }
             
             if dbStructureMap["primarykey"] == "yes" {
@@ -55,7 +56,8 @@ func (db *Database) Update(dbStructure any) (string, error) {
             }
         }
     }
-    // Get Rid of Trailling Comma
+    // Get Rid of Trailing Comma
+    
     buildsql = strings.TrimSuffix(buildsql, ",")
     SQL := "UPDATE " + UpdateTable + " SET " + buildsql + " WHERE " + UpdateColumn + "=" + UpdateValue + ";"
     
