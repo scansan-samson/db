@@ -5,7 +5,7 @@ import (
     "os"
     "time"
     
-    "golang.org/x/exp/slog"
+    "log/slog"
     
     MySQL "github.com/SpaceTent/db/mysql"
 )

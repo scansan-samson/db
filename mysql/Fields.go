@@ -5,7 +5,7 @@ import (
     "strconv"
     "time"
     
-    l "golang.org/x/exp/slog"
+    l "log/slog"
 )
 
 // The Database returns a map of []Records and each Record is a map of Fields.

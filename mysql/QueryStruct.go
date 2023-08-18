@@ -3,7 +3,7 @@ package mysql
 import (
     "reflect"
     
-    l "golang.org/x/exp/slog"
+    l "log/slog"
 )
 
 // You can't do Method Generic types in Go, so we have to use a function.
