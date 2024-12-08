@@ -3,6 +3,8 @@ package mysql
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type InsertPerson[StatusType uint | uint8 | uint16 | uint32 | uint64 | int | int8 | int16 | int32 | int64 | float32 | float64 | string] struct {
@@ -47,74 +49,45 @@ func generateArrayInsertPersonTime() []InsertPersonTime {
 }
 
 func testInsertNumericalErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-
-	if sql != "INSERT INTO Users(name,status) VALUES (X'54657374',1);" {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "INSERT INTO Users(name,status) VALUES (X'54657374',1);", sql)
 }
 
 func testInsertStringErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-
-	if sql != `INSERT INTO Users(name,status) VALUES (X'54657374',X'31');` {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, `INSERT INTO Users(name,status) VALUES (X'54657374',X'31');`, sql)
 }
 
 func testInsertTimeErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-	if sql != `INSERT INTO Users(name,dtadded) VALUES (X'54657374','2024-12-07 15:29:25');` {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, `INSERT INTO Users(name,dtadded) VALUES (X'54657374','2024-12-07 15:29:25');`, sql)
 }
 
 func testInsertManyNumericalErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-
-	if sql != `INSERT INTO Users(name,status) VALUES (X'54657374',1)
+	assert.NoError(t, err)
+	assert.Equal(t, `INSERT INTO Users(name,status) VALUES (X'54657374',1)
 (X'54657374',1)
 (X'54657374',1)
 (X'54657374',1)
-(X'54657374',1);` {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+(X'54657374',1);`, sql)
 }
 
 func testInsertManyStringErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-
-	if sql != `INSERT INTO Users(name,status) VALUES (X'54657374',X'31')
+	assert.NoError(t, err)
+	assert.Equal(t, `INSERT INTO Users(name,status) VALUES (X'54657374',X'31')
 (X'54657374',X'31')
 (X'54657374',X'31')
 (X'54657374',X'31')
-(X'54657374',X'31');` {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+(X'54657374',X'31');`, sql)
 }
 
 func testInsertManyTimeErrorValueHelper(t *testing.T, sql string, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-
-	if sql != `INSERT INTO Users(name,dtadded) VALUES (X'54657374','2024-12-07 15:29:25')
+	assert.NoError(t, err)
+	assert.Equal(t, `INSERT INTO Users(name,dtadded) VALUES (X'54657374','2024-12-07 15:29:25')
 (X'54657374','2024-12-07 15:29:25')
 (X'54657374','2024-12-07 15:29:25')
 (X'54657374','2024-12-07 15:29:25')
-(X'54657374','2024-12-07 15:29:25');` {
-		t.Errorf("SQL Statement is not correct, found: %s", sql)
-	}
+(X'54657374','2024-12-07 15:29:25');`, sql)
 }
 
 func TestInsert(t *testing.T) {
@@ -184,4 +157,10 @@ func TestInsertMany(t *testing.T) {
 
 	sql, err = InsertMany[InsertPersonTime](generateArrayInsertPersonTime())
 	testInsertManyTimeErrorValueHelper(t, sql, err)
+}
+
+func TestInsertManyNoEntries(t *testing.T) {
+	sql, err := InsertMany[InsertPerson[uint]]([]InsertPerson[uint]{})
+	assert.NoError(t, err)
+	assert.Equal(t, sql, "")
 }

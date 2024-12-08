@@ -41,7 +41,7 @@ func (db *Database) Update(dbStructure any) (string, error) {
 				buildsql = buildsql + dbStructureMap["column"] + "="
 
 				switch field.Type.Name() {
-				case "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int", "int32", "int64":
+				case "uint", "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int", "int32", "int64":
 					buildsql = buildsql + fmt.Sprintf("%v", value) + ","
 				case "string":
 					buildsql = buildsql + hexRepresentation(value.(string)) + ","
