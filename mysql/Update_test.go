@@ -81,3 +81,72 @@ func TestUpdate(t *testing.T) {
 	sql, err = DB.Update(generateUpdatePersonTime(0))
 	testUpdateTimeErrorValueHelper(t, sql, err)
 }
+
+func TestNoColumnNameUpdate(t *testing.T) {
+	type testType1 struct {
+		Id      int       `db:"column=id primarykey=yes table=Users"`
+		Name    string    `db:"column="`
+		Dtadded time.Time `db:"column=dtadded"`
+	}
+	type testType2 struct {
+		Id      int       `db:"column=id primarykey=yes table=Users"`
+		Name    string    `db:""`
+		Dtadded time.Time `db:"column=dtadded"`
+	}
+	type testType3 struct {
+		Id      int `db:"column=id primarykey=yes table=Users"`
+		Name    string
+		Dtadded time.Time `db:"column=dtadded"`
+	}
+
+	testTypeEntry1 := testType1{0, "Test", time.Now()}
+	testTypeEntry2 := testType2{0, "Test", time.Now()}
+	testTypeEntry3 := testType3{0, "Test", time.Now()}
+
+	sql, err := DB.Update(testTypeEntry1)
+	assert.EqualError(t, err, "no column name specified for field Name")
+	assert.Empty(t, sql)
+
+	sql, err = DB.Update(testTypeEntry2)
+	assert.EqualError(t, err, "no column name specified for field Name")
+	assert.Empty(t, sql)
+
+	sql, err = DB.Update(testTypeEntry3)
+	assert.EqualError(t, err, "no column name specified for field Name")
+	assert.Empty(t, sql)
+}
+
+func TestNoTableNameUpdate(t *testing.T) {
+	type testType1 struct {
+		Id      int       `db:"column=id primarykey=yes"`
+		Name    string    `db:"column=name"`
+		Dtadded time.Time `db:"column=dtadded"`
+	}
+
+	testTypeEntry1 := testType1{0, "Test", time.Now()}
+
+	sql, err := DB.Update(testTypeEntry1)
+	assert.EqualError(t, err, "no table found in structure")
+	assert.Empty(t, sql)
+}
+
+func TestNoFieldsUpdate(t *testing.T) {
+	type testType1 struct {
+	}
+	type testType2 struct {
+		Id      int       `db:"column=id primarykey=yes table=Users"`
+		Name    string    `db:"column=name omit=yes"`
+		Dtadded time.Time `db:"column=dtadded omit=yes"`
+	}
+
+	testTypeEntry1 := testType1{}
+	testTypeEntry2 := testType2{0, "Test", time.Now()}
+
+	sql, err := DB.Update(testTypeEntry1)
+	assert.EqualError(t, err, "no table found in structure")
+	assert.Empty(t, sql)
+
+	sql, err = DB.Update(testTypeEntry2)
+	assert.EqualError(t, err, "no non-primary key and non-omitted fields found in structure")
+	assert.Empty(t, sql)
+}
