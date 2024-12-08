@@ -27,7 +27,7 @@ func (db *Database) Update(dbStructure any) (string, error) {
 
 			// TODO: Need to look at way for this to happen and not though an error
 			if dbStructureMap["column"] == "" {
-				return "", errors.New("no column name specified for field '" + field.Type.Name() + "'")
+				return "", errors.New("no column name specified for field " + field.Name)
 			}
 
 			if dbStructureMap["primarykey"] == "yes" {
@@ -41,7 +41,7 @@ func (db *Database) Update(dbStructure any) (string, error) {
 				buildsql = buildsql + dbStructureMap["column"] + "="
 
 				switch field.Type.Name() {
-				case "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int", "int32", "int64":
+				case "uint", "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int", "int32", "int64":
 					buildsql = buildsql + fmt.Sprintf("%v", value) + ","
 				case "string":
 					buildsql = buildsql + hexRepresentation(value.(string)) + ","
@@ -57,6 +57,14 @@ func (db *Database) Update(dbStructure any) (string, error) {
 		}
 	}
 	// Get Rid of Trailing Comma
+
+	if UpdateTable == "" {
+		return "", fmt.Errorf("no table found in structure")
+	}
+
+	if buildsql == "" {
+		return "", fmt.Errorf("no non-primary key and non-omitted fields found in structure")
+	}
 
 	buildsql = strings.TrimSuffix(buildsql, ",")
 	SQL := "UPDATE " + UpdateTable + " SET " + buildsql + " WHERE " + UpdateColumn + "=" + UpdateValue + ";"
