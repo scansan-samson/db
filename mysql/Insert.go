@@ -16,6 +16,12 @@ func (db *Database) Insert(dbStructure any) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if table == "" {
+		return "", fmt.Errorf("no table found in structure")
+	}
+	if buildSql == "" {
+		return "", fmt.Errorf("no non-primary key and non-omitted fields found in structure")
+	}
 	valueSql, err := generateValuesSql(dbStructure, t)
 	if err != nil {
 		return "", err
@@ -32,6 +38,12 @@ func InsertMany[T any](dbStructures []T) (string, error) {
 	table, buildSql, err := generateBuildSql(dbStructures[0], t)
 	if err != nil {
 		return "", err
+	}
+	if table == "" {
+		return "", fmt.Errorf("no table found in structure")
+	}
+	if buildSql == "" {
+		return "", fmt.Errorf("no non-primary key and non-omitted fields found in structure")
 	}
 	var valuesSql strings.Builder
 	entriesLength := len(dbStructures)
@@ -60,7 +72,7 @@ func generateBuildSql(dbStructure any, t reflect.Type) (table string, buildSql s
 		if reflect.ValueOf(dbStructure).Field(i).CanInterface() {
 
 			if dbStructureMap["column"] == "" {
-				return "", "", errors.New("no column name specified for field" + field.Type.Name())
+				return "", "", errors.New("no column name specified for field " + field.Name)
 			}
 
 			if dbStructureMap["primarykey"] == "yes" {
