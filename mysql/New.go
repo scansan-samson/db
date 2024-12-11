@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"log/slog"
@@ -25,6 +26,24 @@ type Database struct {
 var DB *Database
 
 var dbs sync.Map
+var numDiffDBs atomic.Uint32
+
+// Ignores warning. Continues to use the last DB declared with "New" or "NewWithName"
+// Set once, do not set value when running in go routines, may cause race condition.
+// IgnoreUnspecifiedDBWarning should be set to true when deploying to production.
+var IgnoreUnspecifiedDBWarning = false
+
+var unspecifiedDBWarning = errors.New("More than 1 connected DB. \"Use\" a db to run queries on it")
+
+func warnNumDiffDBs(db *Database) error {
+	// Connected to more than 1 db server & set to ignore warnings
+	if numDiffDBs.Load() > 1 && !IgnoreUnspecifiedDBWarning {
+			return unspecifiedDBWarning
+	}
+
+	return nil
+}
+
 func New(newDSN string, L *slog.Logger) {
 	newDB(newDSN, newDSN, L)
 }
@@ -42,6 +61,7 @@ func newDB(name, newDSN string, L *slog.Logger) {
 	}
 
 	dbs.Store(newDSN, DB)
+	numDiffDBs.Add(1)
 }
 
 func getConnection(db *Database) (*sql.DB, error) {
