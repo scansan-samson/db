@@ -64,6 +64,15 @@ func newDB(name, newDSN string, L *slog.Logger) {
 	numDiffDBs.Add(1)
 }
 
+
+func use(key string) *Database {
+	v, ok := dbs.Load(key)
+	if !ok {
+		return &Database{}
+	}
+	return v.(*Database)
+}
+
 func getConnection(db *Database) (*sql.DB, error) {
 	copiedDB := DB
 	if db != nil {
