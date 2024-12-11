@@ -25,13 +25,21 @@ type Database struct {
 var DB *Database
 
 func New(newDSN string, L *slog.Logger) {
+	newDB(newDSN, newDSN, L)
+}
 
+func NewWithName(name, newDSN string, L *slog.Logger) {
+	newDB(name, newDSN, L)
+}
+
+func newDB(name, newDSN string, L *slog.Logger) {
 	DB = &Database{
 		connected: false,
 		DSN:       newDSN,
 		Logger:    L,
 		ShowSQL:   false,
 	}
+
 }
 
 func getConnection(db *Database) (*sql.DB, error) {
