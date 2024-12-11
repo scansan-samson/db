@@ -34,16 +34,20 @@ func New(newDSN string, L *slog.Logger) {
 	}
 }
 
-func getConnection() (*sql.DB, error) {
-
-	DB.Lock.Lock()
-	// check once more - in case a prev goroutine has established a connection
-	if DB.connected && DB.dbConnection != nil {
-		DB.Lock.Unlock()
-		return DB.dbConnection, nil
+func getConnection(db *Database) (*sql.DB, error) {
+	copiedDB := DB
+	if db != nil {
+		copiedDB = db
 	}
 
-	if DB.DSN == "" {
+	copiedDB.Lock.Lock()
+	// check once more - in case a prev goroutine has established a connection
+	if copiedDB.connected && copiedDB.dbConnection != nil {
+		copiedDB.Lock.Unlock()
+		return copiedDB.dbConnection, nil
+	}
+
+	if copiedDB.DSN == "" {
 		return nil, errors.New("empty database dsn")
 	}
 
@@ -51,32 +55,32 @@ func getConnection() (*sql.DB, error) {
 
 	// attempt 3 times to connect, then give up
 	for i := 0; i < 3; i++ {
-		DB.dbConnection, err = sql.Open("mysql", DB.DSN)
+		copiedDB.dbConnection, err = sql.Open("mysql", copiedDB.DSN)
 
 		if err == nil {
 			// Open may just validate its arguments without creating a connection to the database.
 			// To verify that the data source name is valid, call Ping.
-			err = DB.dbConnection.Ping()
+			err = copiedDB.dbConnection.Ping()
 			if err == nil {
 				break // connection was fine
 			}
-			DB.Logger.With("attempt", i).With("error", err.Error()).Error("Unable to Ping Database")
+			copiedDB.Logger.With("attempt", i).With("error", err.Error()).Error("Unable to Ping Database")
 			time.Sleep(500 * time.Millisecond) // wait a short while before trying again
 			continue
 		}
 		time.Sleep(500 * time.Millisecond)
-		DB.Logger.With("attempt", i).With("error", err.Error()).Error("Unable to Ping Database")
+		copiedDB.Logger.With("attempt", i).With("error", err.Error()).Error("Unable to Ping Database")
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	DB.dbConnection.SetMaxOpenConns(25)
-	DB.dbConnection.SetMaxIdleConns(25)
-	DB.dbConnection.SetConnMaxIdleTime(5 * time.Minute)
-	DB.connected = true
-	DB.Lock.Unlock()
+	copiedDB.dbConnection.SetMaxOpenConns(25)
+	copiedDB.dbConnection.SetMaxIdleConns(25)
+	copiedDB.dbConnection.SetConnMaxIdleTime(5 * time.Minute)
+	copiedDB.connected = true
+	copiedDB.Lock.Unlock()
 
-	return DB.dbConnection, nil
+	return copiedDB.dbConnection, nil
 }
