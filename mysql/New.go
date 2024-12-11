@@ -21,6 +21,8 @@ type Database struct {
 	MaxDatabaseOpenConnections int
 	MaxDatabaseIdleConnections int
 	DatabaseIdleTimeout        time.Duration
+	passByUse                  atomic.Bool
+	passByUseC                 atomic.Bool
 }
 
 var DB *Database
@@ -38,7 +40,12 @@ var unspecifiedDBWarning = errors.New("More than 1 connected DB. \"Use\" a db to
 func warnNumDiffDBs(db *Database) error {
 	// Connected to more than 1 db server & set to ignore warnings
 	if numDiffDBs.Load() > 1 && !IgnoreUnspecifiedDBWarning {
+		// If it hasn't been passed from "Use" or "UseC",
+		// Meaning it was accessed by mysql.DB.XXX, return the warning.
+		if !db.passByUse.Load() || !db.passByUseC.Load() {
 			return unspecifiedDBWarning
+		}
+		db.passByUseC.Store(false)
 	}
 
 	return nil
@@ -64,6 +71,31 @@ func newDB(name, newDSN string, L *slog.Logger) {
 	numDiffDBs.Add(1)
 }
 
+// Use returns an instance of the DB. After using run "done"
+func Use(key string) (*Database, func()) {
+	db := use(key)
+	if !IgnoreUnspecifiedDBWarning {
+		db.passByUse.Store(true)
+	}
+
+	done := func() {
+		if !IgnoreUnspecifiedDBWarning {
+			db.passByUse.Store(false)
+		}
+	}
+
+	return db, done
+}
+
+// UseC is for chaining. This does NOT need to be closed with done
+func UseC(key string) *Database {
+	db := use(key)
+	if !IgnoreUnspecifiedDBWarning {
+		db.passByUseC.Store(true)
+	}
+
+	return db
+}
 
 func use(key string) *Database {
 	v, ok := dbs.Load(key)
