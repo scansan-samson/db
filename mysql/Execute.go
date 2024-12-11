@@ -1,6 +1,10 @@
 package mysql
 
 func (db *Database) Execute(sql string, parameters ...any) (int64, int64, error) {
+	err := warnNumDiffDBs(db)
+	if err != nil {
+		return 0, 0, err
+	}
 
 	DatabaseConnection, err := getConnection(db)
 	if err != nil {

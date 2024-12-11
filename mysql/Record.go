@@ -9,6 +9,10 @@ import (
 type Record map[string]Field
 
 func (db *Database) RecordUpdate(RecordToUpdate Record, UpdateTable string, UpdateColumn string, UpdateColumnValue string) (int64, error) {
+	err := warnNumDiffDBs(db)
+	if err != nil {
+		return int64(0), err
+	}
 
 	// Build an SQL Statement Based on the Record.
 	buildsql := "UPDATE " + UpdateTable + " SET "
@@ -26,7 +30,7 @@ func (db *Database) RecordUpdate(RecordToUpdate Record, UpdateTable string, Upda
 		case time.Time:
 			buildsql = buildsql + fmt.Sprintf("'%s'", F.Value.(time.Time).Format("2006-01-02 15:04:05")) + ","
 		default:
-			DB.Logger.Error(fmt.Sprintf("%v is unknown", v))
+			db.Logger.Error(fmt.Sprintf("%v is unknown", v))
 			buildsql = buildsql + "'" + F.Value.(string) + "',"
 		}
 
@@ -34,7 +38,7 @@ func (db *Database) RecordUpdate(RecordToUpdate Record, UpdateTable string, Upda
 	buildsql = strings.TrimSuffix(buildsql, ",")
 	buildsql = buildsql + " WHERE " + UpdateColumn + " = " + UpdateColumnValue
 
-	_, RowsAffected, err := DB.Execute(buildsql)
+	_, RowsAffected, err := db.Execute(buildsql)
 	if err != nil {
 		return RowsAffected, err
 	}
@@ -42,6 +46,10 @@ func (db *Database) RecordUpdate(RecordToUpdate Record, UpdateTable string, Upda
 }
 
 func (db *Database) RecordInsert(RecordToInsert Record, InsertTable string) (int64, error) {
+	err := warnNumDiffDBs(db)
+	if err != nil {
+		return int64(0), err
+	}
 
 	// Build an SQL Statement Based on the Record.
 	buildsql := "INSERT INTO " + InsertTable + "("
@@ -60,7 +68,7 @@ func (db *Database) RecordInsert(RecordToInsert Record, InsertTable string) (int
 		case time.Time:
 			endsql = endsql + fmt.Sprintf("'%s'", F.Value.(time.Time).Format("2006-01-02 15:04:05")) + ","
 		default:
-			DB.Logger.Error(fmt.Sprintf("%v is unknown", v))
+			db.Logger.Error(fmt.Sprintf("%v is unknown", v))
 			endsql = endsql + "'" + F.Value.(string) + "',"
 		}
 
@@ -69,7 +77,7 @@ func (db *Database) RecordInsert(RecordToInsert Record, InsertTable string) (int
 	endsql = strings.TrimSuffix(endsql, ",")
 	buildsql = buildsql + ") VALUES (" + endsql + ");"
 
-	id, _, err := DB.Execute(buildsql)
+	id, _, err := db.Execute(buildsql)
 	if err != nil {
 		return 0, err
 	}

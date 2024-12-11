@@ -9,6 +9,11 @@ import (
 // You can't do Method Generic types in Go, so we have to use a function.
 
 func QueryStruct[T any](sql string, parameters ...any) ([]T, error) {
+	err := warnNumDiffDBs(DB)
+	if err != nil {
+		return []T{}, err
+	}
+
 	// First of all, get all the database records, ising the old Record/Field method.
 	allRecords, err := DB.Query(sql, parameters...)
 	if err != nil {
@@ -62,6 +67,10 @@ func QueryStruct[T any](sql string, parameters ...any) ([]T, error) {
 // You can't do Method Generic types in Go, so we have to use a function.
 
 func QuerySingleStruct[T any](sql string, parameters ...any) (T, error) {
+	err := warnNumDiffDBs(DB)
+	if err != nil {
+		return *new(T), err
+	}
 
 	var SingleResult T
 

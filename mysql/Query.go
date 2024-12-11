@@ -1,6 +1,10 @@
 package mysql
 
 func (db *Database) Query(sql string, parameters ...any) ([]Record, error) {
+	err := warnNumDiffDBs(db)
+	if err != nil {
+		return []Record{}, err
+	}
 
 	allRecords := make([]Record, 0)
 
