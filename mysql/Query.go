@@ -4,7 +4,7 @@ func (db *Database) Query(sql string, parameters ...any) ([]Record, error) {
 
 	allRecords := make([]Record, 0)
 
-	DatabaseConnection, err := getConnection()
+	DatabaseConnection, err := getConnection(db)
 	if err != nil {
 		return allRecords, err
 	}

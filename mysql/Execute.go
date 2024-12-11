@@ -2,7 +2,7 @@ package mysql
 
 func (db *Database) Execute(sql string, parameters ...any) (int64, int64, error) {
 
-	DatabaseConnection, err := getConnection()
+	DatabaseConnection, err := getConnection(db)
 	if err != nil {
 		return 0, 0, err
 	}
