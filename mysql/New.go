@@ -24,6 +24,7 @@ type Database struct {
 
 var DB *Database
 
+var dbs sync.Map
 func New(newDSN string, L *slog.Logger) {
 	newDB(newDSN, newDSN, L)
 }
@@ -40,6 +41,7 @@ func newDB(name, newDSN string, L *slog.Logger) {
 		ShowSQL:   false,
 	}
 
+	dbs.Store(newDSN, DB)
 }
 
 func getConnection(db *Database) (*sql.DB, error) {
